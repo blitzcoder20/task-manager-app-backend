@@ -1,15 +1,14 @@
 import express,{Request,Response} from "express"
-import { Pool } from 'pg';
-import dbManager from "./dbManager";
+import { selectAllUsers } from "./service/userService";
+
 
 const app = express();
 
-app.get('/',async (req:Request,res:Response)=>{
-    const db = new dbManager();
-    db.createConnection().then(()=>{
-        db.query("Select * from users").then(result => console.log(result.rows));
+app.get('/api/users',(req:Request,res:Response)=>{
+    console.log("test");
+    selectAllUsers().then((rows)=>{
+        res.json(rows);
     })
-
 });
 
 app.listen(3000, () => {

@@ -32,13 +32,18 @@ class dbManager {
         this.client = await this.pool.connect();
     }
 
-    async query(query:string):Promise<QueryArrayResult>{
+    async query(query:string,params?:string[]):Promise<QueryArrayResult>{
         if(!this.client){
             throw new Error('You must connect to the db first')
         }
-        return await this.client.query(query);
+        return await this.client.query(query,params);
     }
     
+    closeConnection(){
+        if(this.pool){
+            this.pool.end();
+        }
+    }
 }
 
 export default dbManager;
