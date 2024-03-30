@@ -44,6 +44,7 @@ export const deleteUser = async (username: string): Promise<boolean> => {
   return result?.rowCount == 1 ? true : false;
 };
 
+//Updates an already existing user
 export const updateUser = async (username: string, user: User) => {
   //Checks if trying to change your username (illegal operation)
   if (user.username && username != user.username) {
@@ -61,7 +62,23 @@ export const updateUser = async (username: string, user: User) => {
     user.surname,
     username,
   ];
-  
+
   const result = await executeQuery(query, values);
   return result?.rowCount == 1 ? true : false;
 };
+
+//return a single user by his id
+export const getUserById= async (id:number) => {
+  const query= `Select * from users where id=$1`;
+  const values=[id.toString()];
+  const result = await executeQuery(query, values);
+  return result?.rows[0];
+}
+
+//return the id of a user by his id
+export const getUserIdByUsername= async (username:string) : Promise<number> => {
+  const query= `Select id from users where username=$1`;
+  const values=[username];
+  const result = await executeQuery(query, values);
+  return (result?.rows[0] as Record<string,any>).id;
+}
