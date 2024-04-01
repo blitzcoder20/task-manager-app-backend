@@ -8,6 +8,7 @@ interface User {
 
 interface Task {
   author: string,
+  author_id: number,
   created_at?: Date,
   deadline: Date,
   title: string,

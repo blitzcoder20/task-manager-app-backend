@@ -1,9 +1,9 @@
 import { QueryArrayResult } from "pg";
-import dbManager from "../dbManager";
+import DbManager from "../dbManager";
 
 //this function handles query executions
 const executeQuery= async (query: string, params?: string[]): Promise<QueryArrayResult<any[]> | null> => {
-    const db = new dbManager();
+    const db = DbManager.getInstance();
     try {
       await db.createConnection();
       if(!params){
@@ -12,7 +12,7 @@ const executeQuery= async (query: string, params?: string[]): Promise<QueryArray
       return await db.query(query,params);
     } catch (error) {
       console.error("Error executing query:", error);
-      return null;
+      throw Error(error as string);
     } finally {
         if(db){
             db.closeConnection();

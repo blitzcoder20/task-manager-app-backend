@@ -35,7 +35,6 @@ export const createTask = async (task: Task): Promise<boolean> => {
     return false;
   }
 
-  console.log(result)
 
   const idTask: number = (result?.rows[0] as Record<string, any>).id;
 

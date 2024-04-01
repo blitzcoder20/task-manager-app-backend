@@ -1,9 +1,10 @@
 import express,{Request,Response} from "express"
 import userRouter  from "./routes/userRoutes";
 import taskRouter from "./routes/taskRoutes"
-
+import cors from "cors";
 
 const app = express();
+app.use(cors()); //enabling cors
 app.use(express.json()) // for parsing application/json
 app.use('/api/users',userRouter) // manages users routes
 app.use('/api/tasks',taskRouter) // manages tasks routes
