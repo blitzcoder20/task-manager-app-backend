@@ -1,8 +1,8 @@
-import { QueryArrayResult } from "pg";
+import { QueryResult } from "pg";
 import DbManager from "../dbManager";
 
 //this function handles query executions
-const executeQuery= async (query: string, params?: string[]): Promise<QueryArrayResult<any[]> | null> => {
+const executeQuery= async (query: string, params?: string[]): Promise<QueryResult> => {
     const db = DbManager.getInstance();
     try {
       await db.createConnection();
