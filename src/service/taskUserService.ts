@@ -7,8 +7,8 @@ export const associateTaskUser = async (idTask: number, idUser: number) => {
   const values = [idTask.toString(), idUser.toString()];
 
   const result = await executeQuery(query, values);
-  
-  return result;
+
+  return result.rowCount;
 };
 
 export const getAssigneesIdsByTaskId = async (taskId: number) => {
@@ -19,25 +19,26 @@ export const getAssigneesIdsByTaskId = async (taskId: number) => {
   return result;
 };
 
-export const getAssignees = async (taskId: number)  => {
+export const getAssignees = async (taskId: number) => {
   //Retrieves ids
   const assigneesId = (await getAssigneesIdsByTaskId(taskId)).rows.map(
     (v) => v.user_id
   );
 
-  if(assigneesId.length===0){
+  if (assigneesId.length === 0) {
     return [];
   }
 
   //Retrieves usernames
-  const usernamePromises = assigneesId.map(async(id) => (await getUserById(id)).username);
+  const usernamePromises = assigneesId.map(
+    async (id) => (await getUserById(id))?.username
+  );
   const assigneesUsername = await Promise.all(usernamePromises);
   //Combining results
   const assignees = assigneesId.map((id, index) => ({
-    id:id,
+    id: id,
     username: assigneesUsername[index],
   }));
-  
 
   return assignees;
 };
@@ -60,7 +61,7 @@ export const updateAssignees = async (
 ) => {
   const result = await getAssigneesIdsByTaskId(taskId);
 
-  const dbAssigneesIds=result.rows.map(row=> row.user_id)
+  const dbAssigneesIds = result.rows.map((row) => row.user_id);
 
   //Remove from db the association that are no longer used
   const assigneesToRemove = dbAssigneesIds.filter((dbId) => {
@@ -95,5 +96,4 @@ export const updateAssignees = async (
   });
 
   await Promise.all([addAssigneesPromise]);
-
 };

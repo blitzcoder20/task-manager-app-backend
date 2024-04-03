@@ -4,6 +4,7 @@ export type User= {
   email: string,
   age: number,
   username:string,
+  password_hash:string,
   password:string
 }
 

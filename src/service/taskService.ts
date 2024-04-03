@@ -1,23 +1,20 @@
 import { AssigneesUsers, Task } from "../types";
 import executeQuery from "../utils/queryExecuter";
-import {
-  getAssignees,
-  updateAssignees,
-} from "./taskUserService";
-import { getUserIdByUsername } from "./userService";
+import { getAssignees, updateAssignees } from "./taskUserService";
+import { getUserById, getUserIdByUsername } from "./userService";
 
 //Select all tasks
-export const selectAllTasks = async () => {
-  const query = "Select * from tasks";
+export const selectAllTasks = async (): Promise<Array<Task>> => {
+  const query = `SELECT * FROM tasks;`;
+
   const result = await executeQuery(query);
-  //Retrieving associates
-  const tasksPromises = result.rows.map(async(row) => {
-    return { ...row, assigned_to: await getAssignees(row.id) };;
+
+  //Retrieving associates and author username
+  const tasksPromises = result.rows.map(async (row) => {
+    return { ...row, assigned_to: await getAssignees(row.id), author: (await getUserById(row.author_id))?.username};
   });
-
-
+  
   return await Promise.all(tasksPromises);
-
 };
 
 //Creates a new user
@@ -67,14 +64,13 @@ export const deleteTask = async (taskId: number): Promise<boolean> => {
   const query = `DELETE FROM tasks
                 WHERE id=$1`;
   const values = [taskId.toString()];
-  
+
   const result = await executeQuery(query, values);
   return result?.rowCount === 1;
 };
 
 //Update an existing task
 export const updateTask = async (newTask: Task): Promise<boolean> => {
-  const taskId = newTask.id;
   const query = `UPDATE public.tasks
     SET author_id=$1, deadline=$2, title=$3, description=$4
     WHERE id=$5`;
@@ -86,19 +82,18 @@ export const updateTask = async (newTask: Task): Promise<boolean> => {
     newTask.description,
     newTask.id.toString(),
   ];
-
+  
   const result = await executeQuery(query, values);
   //Assigning an empty array
   //I need it to update the assignees to remove it
   //To already assigned ones
-  if(!newTask.assigned_to){
-    newTask.assigned_to=[];
+  if (!newTask.assigned_to) {
+    newTask.assigned_to = [];
   }
   const assigneesIds: number[] = newTask.assigned_to.map((obj) => obj.id);
-  try{
-    await updateAssignees(assigneesIds, taskId);
-  }
-  catch{
+  try {
+    await updateAssignees(assigneesIds, newTask.id);
+  } catch {
     throw Error("Error while updating assignees");
   }
 

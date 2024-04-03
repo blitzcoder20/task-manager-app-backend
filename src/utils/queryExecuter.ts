@@ -11,7 +11,6 @@ const executeQuery= async (query: string, params?: string[]): Promise<QueryResul
       }
       return await db.query(query,params);
     } catch (error) {
-      console.error("Error executing query:", error);
       throw Error(error as string);
     } finally {
         if(db){
