@@ -11,9 +11,13 @@ export const selectAllTasks = async (): Promise<Array<Task>> => {
 
   //Retrieving associates and author username
   const tasksPromises = result.rows.map(async (row) => {
-    return { ...row, assigned_to: await getAssignees(row.id), author: (await getUserById(row.author_id))?.username};
+    return {
+      ...row,
+      assigned_to: await getAssignees(row.id),
+      author: (await getUserById(row.author_id))?.username,
+    };
   });
-  
+
   return await Promise.all(tasksPromises);
 };
 
@@ -27,6 +31,7 @@ export const createTask = async (task: Task): Promise<boolean> => {
   let authorId = task.author_id;
   //Retrieve author id and checks if exist
   if (!authorId) {
+    //If it doesn't exist it will try to retrieve it
     authorId = await getUserIdByUsername(task.author);
     if (!authorId) {
       throw new Error("Invalid author provided");
@@ -75,14 +80,25 @@ export const updateTask = async (newTask: Task): Promise<boolean> => {
     SET author_id=$1, deadline=$2, title=$3, description=$4
     WHERE id=$5`;
 
+
+    let authorId = newTask.author_id;
+    //Retrieve author id and checks if exist
+    if (!authorId) {
+      //If it doesn't exist it will try to retrieve it
+      authorId = await getUserIdByUsername(newTask.author);
+      if (!authorId) {
+        throw new Error("Invalid author provided");
+      }
+    }
+
   const values = [
-    newTask.author_id.toString(),
+    authorId.toString(),
     newTask.deadline.toString(),
     newTask.title,
     newTask.description,
     newTask.id.toString(),
   ];
-  
+
   const result = await executeQuery(query, values);
   //Assigning an empty array
   //I need it to update the assignees to remove it

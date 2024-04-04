@@ -39,6 +39,7 @@ export const createUser = async (user: User): Promise<boolean> => {
     user.username,
     password_hash,
   ];
+  
   const result = await executeQuery(query, values);
   return result?.rowCount === 1;
 };

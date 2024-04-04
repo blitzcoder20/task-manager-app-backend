@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 });
 
 //Creates a new user
-router.put("/create", (req, res) => {
+router.post("/create", (req, res) => {
   const newUser: User = req.body;
   createUser(newUser)
     .then((response) => {

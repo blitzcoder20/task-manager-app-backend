@@ -5,7 +5,6 @@ import {
   selectAllTasks,
   updateTask,
 } from "../service/taskService";
-import { getUserById } from "../service/userService";
 import { Task, User } from "../types";
 
 const router = express.Router();
@@ -24,6 +23,7 @@ router.get("/", (req, res) => {
 //Create a new task
 router.post("/create", (req, res) => {
   const newTask: Task = req.body;
+
   createTask(newTask)
     .then((response) => {
       if (response) {
