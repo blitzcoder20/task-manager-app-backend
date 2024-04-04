@@ -18,6 +18,7 @@ class DbManager {
       password: process.env.DB_PASSWORD,
       port: parseInt(process.env.DB_PORT ?? "5432"),
       user: process.env.DB_USER,
+      ssl: true
     });
 
     this.client = null;
